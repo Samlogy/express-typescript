@@ -12,17 +12,7 @@ export async function createSession(userId: any, userAgent: string) {
   return session.toJSON();
 }
 
-export function createAccessToken({
-  user,
-  session,
-}: {
-  user: any;
-    // | Omit<UserDocument, "password">
-    // | LeanDocument<Omit<UserDocument, "password">>;
-  session: any
-    // | Omit<SessionDocument, "password">
-    // | LeanDocument<Omit<SessionDocument, "password">>;
-}) {
+export function createAccessToken({ user, session }: { user: any; session: any }) {
   // Build and return the new access token
   const accessToken = sign(
     { ...user, session: session._id },
@@ -30,13 +20,9 @@ export function createAccessToken({
   );
 
   return accessToken;
-}
+};
 
-export async function reIssueAccessToken({
-  refreshToken,
-}: {
-  refreshToken: string;
-}) {
+export async function reIssueAccessToken({ refreshToken }: { refreshToken: string }) {
   // Decode the refresh token
   const { decoded } = decode(refreshToken);
 
@@ -55,15 +41,12 @@ export async function reIssueAccessToken({
   const accessToken = createAccessToken({ user, session });
 
   return accessToken;
-}
+};
 
-export async function updateSession(
-  query: FilterQuery<SessionDocument>,
-  update: UpdateQuery<SessionDocument>
-) {
+export async function updateSession(query: FilterQuery<SessionDocument>, update: UpdateQuery<SessionDocument>) {
   return Session.updateOne(query, update);
-}
+};
 
 export async function findSessions(query: FilterQuery<SessionDocument>) {
   return Session.find(query).lean();
-}
+};
