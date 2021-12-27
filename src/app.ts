@@ -2,7 +2,7 @@ import express from "express";
 import config from "config";
 
 import log from "./logger";
-import connect from "./db/connect";
+import connect from "./utils/connectDB";
 import userRoutes from "./routes/user.routes";
 // import { deserializeUser } from "./middleware";
 

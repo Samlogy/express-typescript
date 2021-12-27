@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+
 import config from "config";
 
 const privateKey = config.get("privateKey") as string;
@@ -12,10 +13,10 @@ export function decode(token: string) {
     const decoded = jwt.verify(token, privateKey);
 
     return { valid: true, expired: false, decoded };
-  } catch (error) {
+  } catch (err: any) {
     return {
       valid: false,
-      expired: error.message === "jwt expired",
+      expired: err.message === "jwt expired",
       decoded: null,
     };
   }

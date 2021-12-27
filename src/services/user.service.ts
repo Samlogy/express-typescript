@@ -8,11 +8,11 @@ export async function createUser(input: DocumentDefinition<UserDocument>) {
   } catch (err: any) {
     throw new Error(err);
   }
-}
+};
 
 export async function findUser(query: FilterQuery<UserDocument>) {
   return User.findOne(query).lean();
-}
+};
 
 export async function validatePassword({
   email,
@@ -23,15 +23,11 @@ export async function validatePassword({
 }) {
   const user = await User.findOne({ email });
 
-  if (!user) {
-    return false;
-  }
+  if (!user) return false;
 
   const isValid = await user.comparePassword(password);
 
-  if (!isValid) {
-    return false;
-  }
+  if (!isValid) return false;
 
   return omit(user.toJSON(), "password");
-}
+};
