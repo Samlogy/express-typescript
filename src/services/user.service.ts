@@ -10,14 +10,6 @@ export async function createUser(input: DocumentDefinition<UserDocument>) {
   }
 };
 
-export async function saveUser(input: any) {
-  try {
-    return await User.create(input);
-  } catch (err: any) {
-    throw new Error(err);
-  }
-};
-
 export async function findUser(query: FilterQuery<UserDocument>) {
   return User.findOne(query).lean();
 };
