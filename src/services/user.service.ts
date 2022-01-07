@@ -10,6 +10,14 @@ export async function createUser(input: DocumentDefinition<UserDocument>) {
   }
 };
 
+export async function saveUser(input: any) {
+  try {
+    return await User.create(input);
+  } catch (err: any) {
+    throw new Error(err);
+  }
+};
+
 export async function findUser(query: FilterQuery<UserDocument>) {
   return User.findOne(query).lean();
 };
@@ -30,4 +38,12 @@ export async function validatePassword({
   if (!isValid) return false;
 
   return omit(user.toJSON(), "password");
+};
+
+export function findUserByEmail(email: string): FilterQuery<UserDocument> {
+  return User.findOne({ email }).lean();
+};
+
+export function findUserById(id: string): FilterQuery<UserDocument> {
+  return User.findById(id).lean();
 };
