@@ -11,7 +11,7 @@ import {
 } from "../services/session.service";
 import { sign } from "../utils/jwt.utils";
 
-export async function LoginHandler(req: Request, res: Response) {
+export async function loginHandler(req: Request, res: Response) {
   // validate the email and password
   const user = await validatePassword(req.body);
 
