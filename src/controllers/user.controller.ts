@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { createUser, findUserByEmail, findUserById } from "../services/user.service";
 import log from "../logger";
 
-export async function createUserHandler(req: Request, res: Response) {
+export async function RegisterHandler(req: Request, res: Response) {
   try {
     const data = {
       ...req.body,
@@ -12,7 +12,7 @@ export async function createUserHandler(req: Request, res: Response) {
     };
     const user = await createUser(data);
     // send email with account verification code (verificationCode)
-    return res.send(user);
+    return res.status(201).send(user);
   } catch (err: any) {
     log.error(err);
     return res.status(409).send(err.message);

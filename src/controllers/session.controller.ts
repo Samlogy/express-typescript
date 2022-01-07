@@ -1,6 +1,7 @@
-import config from "config";
 import { get } from "lodash";
 import { Request, Response } from "express";
+
+import config from "config";
 import { validatePassword } from "../services/user.service";
 import {
   createSession,
@@ -10,7 +11,7 @@ import {
 } from "../services/session.service";
 import { sign } from "../utils/jwt.utils";
 
-export async function createUserSessionHandler(req: Request, res: Response) {
+export async function LoginHandler(req: Request, res: Response) {
   // validate the email and password
   const user = await validatePassword(req.body);
 
@@ -22,10 +23,7 @@ export async function createUserSessionHandler(req: Request, res: Response) {
   const session = await createSession(user._id, req.get("user-agent") || "");
 
   // create access token
-  const accessToken = createAccessToken({
-    user,
-    session,
-  });
+  const accessToken = createAccessToken({ user, session });
 
   // create refresh token
   const refreshToken = sign(session, {
@@ -33,24 +31,21 @@ export async function createUserSessionHandler(req: Request, res: Response) {
   });
 
   // send refresh & access token back
-  return res.send({ accessToken, refreshToken });
-}
+  return res.status(200).send({ accessToken, refreshToken });
+};
 
-export async function invalidateUserSessionHandler(
-  req: Request,
-  res: Response
-) {
+export async function invalidateUserSessionHandler(req: Request, res: Response) {
   const sessionId = get(req, "user.session");
 
   await updateSession({ _id: sessionId }, { valid: false });
 
   return res.sendStatus(200);
-}
+};
 
 export async function getUserSessionsHandler(req: Request, res: Response) {
   const userId = get(req, "user._id");
 
   const sessions = await findSessions({ user: userId, valid: true });
 
-  return res.send(sessions);
-}
+  return res.status(200).send(sessions);
+};

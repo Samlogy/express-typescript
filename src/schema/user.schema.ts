@@ -1,6 +1,6 @@
 import { object, string, ref } from "yup";
 
-export const createUserSchema = object({
+export const RegisterSchema = object({
   body: object({
     name: string().required("Name is required"),
     password: string()
@@ -17,7 +17,7 @@ export const createUserSchema = object({
   }),
 });
 
-export const createUserSessionSchema = object({
+export const LoginSchema = object({
   body: object({
     password: string()
       .required("Password is required")

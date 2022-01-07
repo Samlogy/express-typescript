@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.listen(port, host, () => {
   log.info(`Server listing at http://${host}:${port}`);
 
+  // connect to DB
   connect();
 
   // Routes
