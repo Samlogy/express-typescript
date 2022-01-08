@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { get } from "lodash";
+// import { get } from "lodash";
 
 import { createUser, findUserByEmail, findUserById } from "../services/user.service";
 import { sendEmail } from "../services/email.service";

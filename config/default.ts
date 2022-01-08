@@ -5,7 +5,6 @@ export default {
     saltWorkFactor: 10,
     accessTokenTtl: "15m",
     refreshTokenTtl: "1y",
-    sendgridApiKey: "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",
     privateKey: `-----BEGIN RSA PRIVATE KEY-----
     MIICWwIBAAKBgQCQNBc4IP2ewViqE+ZHbnqGoCZFyAUtrxKmO4k/boSvBisJH6BX
     01ajpafM7c7f5PO+wAcGYIxiTQsv9ml2/cgnB6MWG/YYKDCfbWLNbpvQxYlUCu0f
