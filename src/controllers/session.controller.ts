@@ -16,7 +16,10 @@ export async function loginHandler(req: Request, res: Response) {
   const user = await validatePassword(req.body);
 
   if (!user) {
-    return res.status(401).send("Invalid username or password");
+    return res.status(401).send({
+      success: false,
+      message: "Invalid username or password"
+    });
   }
 
   // Create a session
@@ -31,7 +34,10 @@ export async function loginHandler(req: Request, res: Response) {
   });
 
   // send refresh & access token back
-  return res.status(200).send({ accessToken, refreshToken });
+  return res.status(200).send({
+    success: true,
+    data: { accessToken, refreshToken }
+  });
 };
 
 export async function invalidateUserSessionHandler(req: Request, res: Response) {
@@ -39,7 +45,9 @@ export async function invalidateUserSessionHandler(req: Request, res: Response) 
 
   await updateSession({ _id: sessionId }, { valid: false });
 
-  return res.sendStatus(200);
+  return res.status(200).send({
+    success: true
+  });
 };
 
 export async function getUserSessionsHandler(req: Request, res: Response) {
@@ -47,5 +55,8 @@ export async function getUserSessionsHandler(req: Request, res: Response) {
 
   const sessions = await findSessions({ user: userId, valid: true });
 
-  return res.status(200).send(sessions);
+  return res.status(200).send({
+    success: true,
+    data: sessions
+  });
 };
