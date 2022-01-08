@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
-// import { omit } from "lodash";
+import { get } from "lodash";
 
 import { createUser, findUserByEmail, findUserById } from "../services/user.service";
 import { sendEmail } from "../services/email.service";
 import log from "../logger";
-import { generateKey } from "../utils/generateKey";
+import { generateCode } from "../utils/generateKey";
 
 export async function registerHandler(req: Request, res: Response) {
   try {
-    const confirmationCode = generateKey(25);
+    const confirmationCode = generateCode(25);
 
     const data = {
       ...req.body,
@@ -17,7 +17,7 @@ export async function registerHandler(req: Request, res: Response) {
     };
     const user = await createUser(data);
 
-    const link = `http://localhost:3000/api/users/verification-account/${confirmationCode}`
+    const link = `http://localhost:3000/api/users/verification-account/${confirmationCode}/${user.email}`;
 
     // send email with account verification code (verificationCode)
     const message = {
@@ -47,20 +47,27 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
 
     if (!user) {
       log.debug(`User with email ${email} does not exists`);
-      return res.status(500).send(`User with email ${email} does not exists`);
+      return res.status(500).send({
+        success: false,
+        message: `User with email ${email} does not exists`
+      });
     }
   
     if (!user.verified) {
-      return res.send("User is not verified");
+      return res.status(403).send({
+        success: false,
+        message: "User is not verified"
+      });
     }
   
     // generate password reset code
-    const passwordResetCode = generateKey(25); 
-  
+    const passwordResetCode = generateCode(25); 
     user.passwordResetCode = passwordResetCode;
+
+    const link = `http://localhost:3000/api/users/reset-password/${passwordResetCode}/${email}`;
   
     // update user in DB
-    // await user.save();
+    await user.save();
   
     // send email
     const message = {
@@ -70,36 +77,40 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
         email: "senanisammy@gmail.com",
       },
       subject: "Reset your password",
-      text: `Password reset code: ${passwordResetCode}. Id ${user._id}`,
+      text: `Password Reset Account, please click in the link below.\n${link}`,
       // html: generateEmailTemplate(obj),
     };
-
     await sendEmail(message);
   
     log.debug(`Password reset email sent to ${email}`);
   
-    return res.status(201).send("Your forgot password link has been sent successfully");
+    return res.status(201).send({
+      success: true,
+      message: "Your forgot password link has been sent successfully"
+    });
   } catch (err: any) {
     log.error(err);
-    return res.status(409).send(err.message);
+    return res.status(409).send({
+      success: false,
+      message: err.message
+    });
   }
 };
 
 export async function resetPasswordHandler(req: Request, res: Response) {
-  try {
-    const { id, passwordResetCode } = req.params;
+  try {    
+    const user = await findUserByEmail(req.params.email);
+    const codeUrl = req.params.passwordResetCode;
 
-    const { password } = req.body;
-
-    const user = await findUserById(id);
-
-    if (!user || !user.passwordResetCode || user.passwordResetCode !== passwordResetCode) {
+    if (!user || !user.passwordResetCode || codeUrl == user.passwordResetCode) {
       return res.status(400).send("Could not reset user password");
     }
+    const { password } = req.body;
 
     user.passwordResetCode = null;
-    user.password = password;
-    // await user.save(); // update user in DB
+    user.password = password; // hash password
+
+    await user.save(); // update user in DB
 
     // send email
     const message = {
@@ -112,22 +123,46 @@ export async function resetPasswordHandler(req: Request, res: Response) {
       text: `Your password has been updated successfully`,
       // html: generateEmailTemplate(obj),
     };
-
     await sendEmail(message);
 
-    return res.status(201).send("Password Successfully Reseted");
+    return res.status(201).send({
+      success: true,
+      message: "Password Successfully Reseted"
+    });
 
   } catch (err: any) {
     log.error(err);
-    return res.status(409).send(err.message);
+    return res.status(409).send({
+      success: false,
+      message: err.message
+    });
   }
 };
 
 export async function verificationAccountHandler(req: Request, res: Response) {
   try {
-    // update user DB verified: true
+    const user = await findUserByEmail(req.params.email);
+
+    const codeUrl = req.params.verificationCode;
+
+    if (codeUrl == user.verificationCode) {
+      user.verified = true;
+      await user.save(); // update user DB verified: true
+      return res.status(200).send({
+        success: true,
+        message: "Account Confirmed Successfully"
+      });
+    }
+    return res.status(403).send({
+      success: false,
+      message: "wrong code verification !"
+    })
+    
   } catch(err: any) {
     log.error(err);
-    return res.status(409).send(err.message);
+    return res.status(409).send({
+      success: false,
+      message: err.message
+    });
   }
 };
