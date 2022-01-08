@@ -21,12 +21,12 @@ export default function (app: Express) {
   app.delete("/api/sessions", requiresUser, invalidateUserSessionHandler);
 
   // forgot password
-  app.post("/api/users/forgotpassword", validateRequest(forgotPasswordSchema), forgotPasswordHandler);
+  app.post("/api/users/forgot-password", validateRequest(forgotPasswordSchema), forgotPasswordHandler);
   
   // reset password
-  app.post("/api/users/resetpassword/:id/:passwordResetCode", validateRequest(resetPasswordSchema), resetPasswordHandler);
+  app.post("/api/users/reset-password/:passwordResetCode/:email", validateRequest(resetPasswordSchema), resetPasswordHandler);
 
   // user account verification
-  app.get("/api/users/verification-account/:verificationCode", verificationAccountHandler);
+  app.get("/api/users/verification-account/:verificationCode/:email", verificationAccountHandler);
   
 }

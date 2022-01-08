@@ -39,3 +39,4 @@ export function findUserByEmail(email: string): FilterQuery<UserDocument> {
 export function findUserById(id: string): FilterQuery<UserDocument> {
   return User.findById(id).lean();
 };
+
