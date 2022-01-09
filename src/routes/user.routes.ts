@@ -7,6 +7,8 @@ import { RegisterSchema, LoginSchema, forgotPasswordSchema, resetPasswordSchema 
 import { loginHandler, invalidateUserSessionHandler, getUserSessionsHandler } from "../controllers/session.controller";
 
 export default function (app: Express) {
+
+  app.get('/check-health', (req, res) => res.send('its working'))
   
   // Register user
   app.post("/api/users", validateRequest(RegisterSchema), registerHandler);
@@ -28,5 +30,4 @@ export default function (app: Express) {
 
   // user account verification
   app.get("/api/users/verification-account/:verificationCode/:email", verificationAccountHandler);
-  
 }
