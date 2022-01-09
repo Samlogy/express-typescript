@@ -3,6 +3,9 @@ import express from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
+import { Request, Response, NextFunction } from "express";
+const xssCleaner = require('xss-clean');
+const hpp = require('hpp')
 
 import config from "config";
 import log from "./logger";
@@ -13,11 +16,15 @@ import userRoutes from "./routes/user.routes";
 const port = config.get("port") as number;
 const host = config.get("host") as string;
 
+// const globalErrorHandler = require('./src/controllers/errorController')
+const AppError = require("./utils/appError");
+import { globalErrorHandler } from "./controllers/error.controller";
+
 const app = express();
 // app.use(deserializeUser);
 
-// request body as JSON
-app.use(express.json());
+// request body as JSON + set a limit of 10Kb in the body request
+app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false }));
 
 // helmet
@@ -36,33 +43,25 @@ app.use(limiter); //  apply to all requests
 // data sanitization against NoSQL Injection Attacks
 app.use(mongoSanitize());
 
+// data sanitization against XSS to prevent HTML code inside DB
+app.use(xssCleaner())
+
 if (process.env.NODE_ENV === "prod") {
   app.all("*", (req, res, next) => {
-    if (req.secure) {
-      return next();
-    } else if (req.hostname == "backend") {
-      return next();
-    }
+    if (req.secure) return next();
+    else if (req.hostname == "backend")  next();
     return res.redirect(307, `https://${req.hostname}:${app.get("secPort")}${req.url}`);
   });
 };
 
+// handle inexistant routes
+app.all('*', (req: Request, res: Response, next: NextFunction) => {
+	// if we pass something to next() express will assume it is an error object and call Global error handling middlware immedialtly
+	next(new AppError(`the url ${req.originalUrl} is not found`, 404))
+})
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(); // 404 error
-});
-
-// error handler
-app.use(function (err: any, req: any, res: any, next: any) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "dev" ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.json(err);
-});
+// Global Error handling middleware
+app.use(globalErrorHandler)
 
 app.listen(port, host, () => {
   log.info(`Server listing at http://${host}:${port}`);
