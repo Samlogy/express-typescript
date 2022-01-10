@@ -1,12 +1,13 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 // import { get } from "lodash";
 
-import { createUser, findUserByEmail, findUserById } from "../services/user.service";
+// const AppError = require('../utils/appError')
+import { createUser, findUserByEmail } from "../services/user.service";
 import { sendEmail } from "../services/email.service";
 import log from "../logger";
 import { generateCode } from "../utils/generateKey";
 
-export async function registerHandler(req: Request, res: Response) {
+export async function registerHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const confirmationCode = generateCode(25);
 
@@ -39,7 +40,7 @@ export async function registerHandler(req: Request, res: Response) {
   }
 };
 
-export async function forgotPasswordHandler(req: Request, res: Response) {
+export async function forgotPasswordHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const { email } = req.body;
 
@@ -97,7 +98,7 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
   }
 };
 
-export async function resetPasswordHandler(req: Request, res: Response) {
+export async function resetPasswordHandler(req: Request, res: Response, next: NextFunction) {
   try {    
     const user = await findUserByEmail(req.params.email);
     const codeUrl = req.params.passwordResetCode;
@@ -139,7 +140,7 @@ export async function resetPasswordHandler(req: Request, res: Response) {
   }
 };
 
-export async function verificationAccountHandler(req: Request, res: Response) {
+export async function verificationAccountHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const user = await findUserByEmail(req.params.email);
 

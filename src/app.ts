@@ -5,7 +5,6 @@ import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
 import { Request, Response, NextFunction } from "express";
 const xssCleaner = require('xss-clean');
-const hpp = require('hpp')
 
 import config from "config";
 import log from "./logger";
@@ -16,8 +15,7 @@ import userRoutes from "./routes/user.routes";
 const port = config.get("port") as number;
 const host = config.get("host") as string;
 
-// const globalErrorHandler = require('./src/controllers/errorController')
-const AppError = require("./utils/appError");
+import { AppError } from "./utils/appError";
 import { globalErrorHandler } from "./controllers/error.controller";
 
 const app = express();
@@ -57,7 +55,7 @@ if (process.env.NODE_ENV === "prod") {
 // handle inexistant routes
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
 	// if we pass something to next() express will assume it is an error object and call Global error handling middlware immedialtly
-	next(new AppError(`the url ${req.originalUrl} is not found`, 404))
+	next(AppError(res, `the url ${req.originalUrl} is not found`, 404, false))
 })
 
 // Global Error handling middleware
