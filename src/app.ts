@@ -5,6 +5,7 @@ import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
 import { Request, Response, NextFunction } from "express";
 const xssCleaner = require('xss-clean');
+const cors = require('cors');
 
 import config from "config";
 import log from "./logger";
@@ -24,6 +25,22 @@ const app = express();
 // request body as JSON + set a limit of 10Kb in the body request
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false }));
+
+const allowList = ['http://localhost:3000']
+
+const corsManip = (req: Request, callback: any) => {
+    let corsOptions;
+    const origin = req.header('Origin') as string;
+
+    if (allowList.indexOf(origin) !== -1) {
+        corsOptions = { origin: true } // enable requested origin in cors response
+    } else {
+      corsOptions = { origin: false } // disable cors in reponse 
+    }
+    callback(null, corsOptions)
+};
+
+app.use(cors(corsManip))
 
 // helmet
 app.use(helmet()); // recommended to be done early
