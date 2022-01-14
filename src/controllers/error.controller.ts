@@ -28,28 +28,23 @@ const sendErrorProd = (err: any, res: Response) => {
 };
 const handleCastErrorDB = (res: Response, error: any) => {
 	const message = `Invalid ${error.path}: ${error.value}`
-	// return new AppError(message, 400)
 	return AppError(res, message, 400, false)
 };
 const handleDuplicateFields = (res: Response, error: any) => {
 	const message = `Duplicate field value: -${error.keyValue.name}- choose another one`
-	// return new AppError(message, 400)
 	return AppError(res, message, 400, false)
 };
 const handleValidationError = (res: Response, error: any) => {
 	const errors = Object.values(error.errors).map((item: any) => item.message) // iterate over error object to get all the messages
 	const message = `Invalid input: ${errors.join(', ')}`
-	// return new AppError(message, 400)
 	return AppError(res, message, 400, false)
 };
 const handleJWTError = (res: Response, err: any) => {
 	const message = `${err.message}, please login again.`
-	// return new AppError(message, 401)
 	return AppError(res, message, 401, false)
 };
 const handleJWTExpiredError = (res: Response, err: any) => {
 	const message = `${err.message}, session expired, please login again.`
-	// return new AppError(message, 401)
 	return AppError(res, message, 401, false)
 };
 //------------------------------------------------------------------------------------------------------------------------------------------
