@@ -11,6 +11,8 @@ import config from "config";
 import log from "./logger";
 import connect from "./utils/connectDB";
 import userRoutes from "./routes/user.routes";
+import cache from "./utils/cacheDB";
+
 // import { deserializeUser } from "./middleware";
 
 const port = config.get("port") as number;
@@ -83,6 +85,9 @@ app.listen(port, host, () => {
 
   // connect to DB
   connect();
+
+  // cache DB
+  // cache();
 
   // Routes
   userRoutes(app);
