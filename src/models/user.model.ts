@@ -3,6 +3,13 @@ import bcrypt from "bcrypt";
 
 import config from "config";
 
+// user roles
+const roles = {
+  admin: 'admin',
+  moderator: 'moderator',
+  user: 'user'
+};
+
 export interface UserDocument extends mongoose.Document {
   email: string;
   name: string;
@@ -14,12 +21,37 @@ export interface UserDocument extends mongoose.Document {
 
 const UserSchema = new mongoose.Schema(
   {
-    email: { type: String, required: true, unique: true },
-    name: { type: String, required: true },
-    password: { type: String, required: true },
-    passwordResetCode: { type: String },
-    verificationCode: { type: String },
-    verified: { type: Boolean },
+    email: { 
+      type: String, 
+      required: true, 
+      unique: true 
+    },
+    name: { 
+      type: String, 
+      required: true 
+    },
+    password: { 
+      type: String, 
+      required: true 
+    },
+    passwordResetCode: { 
+      type: String 
+    },
+    verificationCode: { 
+      type: String 
+    },
+    verified: { 
+      type: Boolean 
+    },
+    role: {
+      type: String, 
+      enum: [roles.admin, roles.moderator, roles.user],
+      default: roles.user,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now()
+    }
   },
   { timestamps: true }
 );

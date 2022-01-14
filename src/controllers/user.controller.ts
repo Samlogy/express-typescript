@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-// import { get } from "lodash";
 
-// const AppError = require('../utils/appError')
 import { createUser, findUserByEmail } from "../services/user.service";
 import { sendEmail } from "../services/email.service";
 import log from "../logger";
