@@ -27,3 +27,7 @@ export const generateCode = (length: number): string => {
     }
     return result;
 };
+
+export const generateUsername = (email: string): string => { 
+    return email.substr(0, email.indexOf('@'))
+};

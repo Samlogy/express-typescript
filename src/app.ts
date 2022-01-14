@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ path: './config.dev.env' });
 import express from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
