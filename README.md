@@ -14,3 +14,4 @@ build boilerplate in express with typescript which involves (user managment syst
 1. helmet (protect app from well known vulnerabilities sent in http headers)
 2. set rater limiter ALL Requests (limit number of request to api endpoint)
 3. mongoSanitize (protect from NoSQL injections)
+4. set body length (size) to 10Kb 
